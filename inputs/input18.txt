@@ -1,0 +1,6 @@
+/*Init*/
+tree=5
+/*Actions*/
+tree>0:tree--
+/*Goal*/
+tree=0

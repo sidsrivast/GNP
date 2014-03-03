@@ -1,0 +1,12 @@
+/*Init*/
+Ore=1,Coal=2,Iron=0,Tools=0
+/*Actions*/
+Ore>-1:Ore++,Coal++
+Ore>-1:Ore++
+Ore>-1:Coal++
+Ore>0:Ore--
+Coal>0:Coal--
+Ore>5,Coal>5:Ore--,Coal--,Iron++
+Iron>5: Iron--,Tools++
+/*Goal*/
+Tools>5

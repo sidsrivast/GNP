@@ -1,0 +1,16 @@
+/*Init*/
+Ore=1,Coal=2,Iron=0,Tools=0
+/*Actions*/
+Ore>-1,Ore<5,Coal<5,Iron<5:Ore++,Coal++
+Ore>-1,Ore<10,Coal<10,Iron<10:Ore++,Coal++
+Ore>-1,Ore<15,Coal<15,Iron<15:Ore++,Coal++
+Ore>-1,Ore<20,Coal<20,Iron<20:Ore++,Coal++
+Ore>-1,Ore<25,Coal<25,Iron<25:Ore++,Coal++
+Ore>-1:Ore++
+Ore>-1:Coal++
+Ore>0:Ore--
+Coal>0:Coal--
+Ore>24,Coal>24:Ore--,Coal--,Iron++
+Iron>24: Iron--,Tools++
+/*Goal*/
+Tools>24

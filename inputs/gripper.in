@@ -1,0 +1,11 @@
+binA>0, binB=0, dtA=0, dtB>0, inG=0, gc >0
+*
+dtA=0, binA>0, gc>0: binA-, inG+, gc-
+dtB=0, binB>0, gc>0: binB-, inG+, gc-
+dtA>0: dtA-, dtB+
+dtB>0: dtA+, dtB-
+dtA=0, inG+: inG-, gc+, binA+
+dtB=0, inG+: inG-, gc+, binB+
+*
+*
+binA=0

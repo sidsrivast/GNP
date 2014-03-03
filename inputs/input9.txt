@@ -1,0 +1,11 @@
+/*Init*/
+binA=2, binB=0, dtA=0, dtB=2, inG=0, capacity =2
+/*Actions*/
+dtA<1, binA>0, capacity>0: binA--, inG++, capacity--
+dtB<1, binB>0, capacity>0: binB--, inG++, capacity--
+dtA>0: dtA--, dtB++
+dtB>0: dtA++, dtB--
+dtA<1, inG>0: inG--, capacity++, binA++
+dtB<1, inG>0: inG--, capacity++, binB++
+/*Goal*/
+binA<1

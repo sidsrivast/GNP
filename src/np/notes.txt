@@ -1,0 +1,181 @@
+
+We want to study the computation of plans with loops for numeric
+planning problems with different forms of observability and
+non-determinism in action effects.  
+
+
+
+Given a set of variables, define the landmarks for a variable as a
+finite set of nautral numbers. The set of intervals defined by a set
+of landmarks {l1, ..., lk} is the set {[0, l1), [l1, l2), [l2, l3), ... [lk, \infinity) }.
+
+
+Action effects: [+]x or [-]x for any x in the set of
+variables. [+]/[-]x can be interpreted as one of the following:
+
+1. x gets x+1 or x -1 respectively. This is the deterministic case.
+
+2. x gets increased (or decreased) by an epsilon bounded
+delta. Non-deterministic but the epsilon-boundedness induces some good
+properties.
+
+3. x is possibly incremented or decremented by 1. Also
+non-determinstic; if the effect takes place it is always of magnitude 1.
+
+
+Define [Action]: An action consists of a precondition, defined as a
+mapping from each variable in X to a union of intervals defined by the
+landmarks for that variable and a set of action effects (at
+most one for each variable).
+
+<Define the effect of actions on concrete and abstract states>
+
+Define [Planning Domain]: A planning domain is defined by a set of
+variables X, a set of landmarks in N for each variable X, and a set of
+actions A. A state in a domain is defined by an assignment of natural
+numbers to the variables in X. An abstract state in the domain
+associates each variable to one of the intervals defined by its landmarks.
+
+We restrict the landmarks so that a single action application can only
+change the value of a variable from an interval to one of its
+neighboring intervals. Thus, any two landmarks for a variable must be
+at least 2 units apart.
+
+Planning problems:
+
+Partially observable: A planning domain, an initial abstract state and
+a goal specified as a mapping from variables to intervals in
+N. 
+
+Fully observable:  A planning domain, an initial state and a goal
+specified as a mapping from variables to intervals in N.
+
+
+Solutions to planning problems:
+
+A policy \pi is a partial mapping from the set of abstract states
+to actions such that \pi is defined for all states s that are
+reachable under \pi from the initial state s0, but do not satisfy the
+goal condition.
+
+
+Policy test algorithm:
+1. Construct the transition graph ts for the policy
+2. Let sieve(ts) be the return value of the sieve algorithm on ts
+3. If sieve(ts)==terminating and all open nodes of ts are goal nodes,
+return "terminating solution"
+4. If for every connected component in ts, all open nodes are goal nodes, return
+"strong cyclic solution".
+5. return "non-solution".
+
+
+Key Questions:
+For each interpretation of [+]/[-],
+
+1. Is the policy test algorithm sound and/or complete for all its return values?
+
+2. Is it possible to develop a sound and complete algorithm for
+all return values?
+
+For each interpretation of [+]/[-] and each of the two settings of
+observability:
+
+3. Are policies sufficient to represent a solution when an
+executable solution exists? [Alternatively, is the
+abstract state a sufficient representation of a belief state?]
+
+4. For any policy, is there a set E of sequences of the form 
+s_1 --a_1--> s_2 --a_2--> ... s_n-1 --a_3-->s_n
+
+where s_i are states //with values in N// and a_i are actions with
+deterministic interpretations of [+]/[-], such that the sequences in E
+abstract to the solution policy?
+
+//Note: in cases where 4 is true, hybrid search using example plans
+that manipulate only natural numbers can be considered to
+be "complete" in the sense that there is a finite set of examples
+which can be used to create abstract policy for solving the general
+problem. 
+
+5. Does any problem with an executable solution have a refined policy as a solution?
+
+[[Can also state properties of the abstraction: whether every abstract
+transition sequence corresponds to a sequence of concrete transitions.
+This is false for deterministic interpretations, but true for the
+other two. ]]
+
+1. 
+
+For deterministic interpretation of [+]/[-]: Sound but not complete
+for "terminating solution" (abacus program result); sound and complete
+for the rest.
+
+For epsilon-bounded interpretation of [+]/[-]: sound and complete in
+all cases.
+
+For possible increment/decrement interpretation: sound and complete in
+all cases ("terminating solution" will never be returned)
+
+
+2.
+For deterministic interpretation of [+]/[-]: Undecidable for the
+"Terminating solution case"
+
+For epsilon-bounded interpretation of [+]/[-] the presented algorithm
+is the desired solution.
+
+For possible increment/decrement interpretation: terminating policies
+with strongly connected components do not exist.
+
+
+3. If there exists an executable solution by the agent be represented as a
+solution policy?
+
+
+For deterministic interpretation of [+]/[-]:
+No.
+
+Counter-example for full observability:
+
+a1 enables a2 enables a3; all add 1 to x1; after a3, x1 in [7,-1) enables goal sequence
+o.w. dead end
+a4 enables a5; both add 1 to x1; after a5, x1 in [2, 7) enables goal sequence,
+o.w. dead end
+
+both a1 and a4 available at start.
+
+Solution policy:
+x1 in [4,-1): use a1, a2, a3
+x1 in [0,4): use a4, a5
+
+but 4 is not a landmark so this solution cannot be represented as a policy.
+
+
+Counter-example for partial observability:
+
+Include the action a6 which decrements x in the problem above.
+
+Solution policy:
+Given x1 in any interval, apply decrements k times where k is the
+upper bound of the interval. This must make x1=0. Now, apply a4 then
+a5. This solves the problem described above although the solution
+cannot be represented as a policy.
+
+
+
+
+For epsilon-bounded interpretation of [+]/[-]: 
+Conjecture: true for full observability, and hence for
+partial observability. Requires separate proofs for terminating and
+strong-cyclic cases.
+
+
+For possible increment/decrement interpretation:
+Conjecture: True for both full and partial observability.
+
+
+
+
+
+
+

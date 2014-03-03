@@ -1,0 +1,10 @@
+toDel>0, TC>0, dDest>0, dSrc=0, F>0, inT=0
+*
+TC>0, toDel>0, dSrc=0: TC-, inT+
+F>0,dDest>0: dSrc+, F-, dDest-
+F=0:F+
+dDest=0, inT>0: TC+, toDel-, inT-
+dSrc>0:dSrc-, F-, dDest+
+*
+*
+toDel=0

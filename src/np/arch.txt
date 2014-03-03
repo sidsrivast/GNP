@@ -1,0 +1,56 @@
+
+Three possible applications of this work:
+1. Generalized planning: given initial abstract states with intervals for variables, find gp 
+with provably terminating cycles
+2. Given same form of initial states, but non-deterministic action effects (epsilon-bounded), find a qnp
+3. Find contingent numeric plan given ranges of numeric variables. This is close to (1).
+
+Overall objectives:
+
+
+Input: A numeric planning problem instance or a generalized numeric planning problem.
+Output: A generalized numeric plan that is guaranteed to terminate.
+
+Assumption: all intervals are of size at least 2. Makes abstract action results 
+complete wrt possible concretizations.
+
+Termination mostly via decrementing actions. If upper bounds, then termination can be shown through
+incrementing actions as well.
+
+Method: 
+
+0. If input is an instance, convert it to a gnumeric problem
+1. Create an instance of the gnumeric problem (use input if possible)
+2. Call numeric planner with the instance
+3. Trace the resulting plan
+4. Merge with safe loops
+5. Identify open nodes
+
+In the existing code, need to modify so as to
+- parse multiple landmarks
+- implement abstract actions with multiple landmarks
+- use revised qualitative sieve algorithm
+
+
+how to store landmarked abstract states
+
+x \in [c1, c2)
+
+c1 >=0
+c2 \in Int+ something for infinity.
+
+class:
+   Interval: lowerLimit, upperLimit
+
+upperLimit=-1 to signify infinity
+
+
+action:
+ calls methods to increment/decrement
+  possibleValues.put(v, new HashSet<Integer>(Arrays.asList(0,1)));
+ change this in action.java to put the possible intervals.
+
+method getPossibleEffects(variable, landmarks)
+
+
+provide methods for getting possible intervals after increment, decrement.

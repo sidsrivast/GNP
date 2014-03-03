@@ -1,0 +1,11 @@
+/*Init*/
+fuel=5,distance=0,refueling=0,refueled=0
+/*Actions*/
+refueling<1,fuel>0,fuel<2,distance<2: distance++, fuel--
+refueling<1,fuel>0,fuel<4,distance<4: distance++, fuel--
+refueling<1,fuel>0,fuel<6, distance<6: distance++, fuel--
+fuel<6,refueled<1: fuel++,refueling++
+fuel>5,refueling>0,refueled<1: refueled++
+fuel>5,refueling>-1,refueled>0: refueling--
+/*Goal*/
+distance>4,distance<6

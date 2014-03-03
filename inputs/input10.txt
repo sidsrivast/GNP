@@ -1,0 +1,11 @@
+/*Init*/
+toDeliver=1, truckCapacity=1, dToDest=1, dToSrc=0, fuel=5, inTruck=0
+/*Actions*/
+truckCapacity>0, toDeliver>0, dToSrc<1: truckCapacity--, inTruck++
+fuel>0,dToDest>0: dToSrc++, fuel--, dToDest--
+fuel>2,fuel<12:fuel++
+fuel>2,fuel<6:fuel++
+dToDest<1, inTruck>0: truckCapacity++, toDeliver--, inTruck--
+dToSrc>0,fuel>0:dToSrc--, fuel--, dToDest++
+/*Goal*/
+toDeliver<1,dToSrc<1

@@ -1,0 +1,10 @@
+/*Init*/
+trashInRoom=5,trashAmount=1, binB=0, dtTrash=0, dtB=2, inG=0, capacity =2
+/*Actions*/
+trashInRoom>0,trashAmount<2:trashAmount++,dtTrash++
+dtTrash>0: dtTrash--, dtB++
+dtTrash<1, trashAmount>1, capacity>0: trashInRoom--,trashAmount--, inG++, capacity--
+dtB>0: dtTrash++, dtB--
+binB>-1,dtB<1, inG>0: inG--, capacity++, binB++
+/*Goal*/
+trashInRoom<1

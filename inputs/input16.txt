@@ -1,0 +1,8 @@
+/*Init*/
+snowDriveway=5, snowWalkway=5, dToDriveway=5
+/*Actions*/
+snowWalkway>0: snowWalkway--
+snowWalkway<1: dToDriveway--
+dToDriveway<1:snowDriveway--,snowWalkway++
+/*Goal*/
+snowWalkway<1, snowDriveway<1

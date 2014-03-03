@@ -1,0 +1,46 @@
+Upper Limit 5:
+input8: driving: 
+5,0.4;  5,0.6;  4,0.4;  4,0.5;  4,0.4;  5, 0.4; 5, 0.3; 5, 0.6;     4,0.4;  3,0.3;
+Avg: 4.4,.5
+#Vars: 6
+
+input9: moving objects from A to B with gripper 
+3,0.2;  3,0.3;  4,0.2;   6,0.3; 5,0.4
+Avg: 4.2,0.3
+#Vars: 6
+
+input16: snow: 
+1,0.1;  1,0.0;  1,0.0;  1,0.0;  2,0.1; 1,0.0; 2, 0.1; 1, 0.0; 1, 0.0; 1, 0.0; 
+Avg: 1.2,0.0
+#Vars: 3
+
+input17: trash-collection: 
+6,0.7;  6,0.5;  7,0.6;  6,0.6;  5,0.5;  6, 0.6; 4, 0.5; 8,0.7; 6,0.6; 6,0.5
+Avg: 6,0.6
+#Vars: 7
+
+input18: tree: 1 example, 0.1s
+1,0.0; 1,0.0; 1,0.0; 1,0.0; 1,0.0;1,0.0; 1,0.0; 1,0.0; 1,0.0; 1,0.0
+
+Avg: 1,0.0
+#Vars: 1
+
+input1:nestedVar: 0.1s
+1,0.0; 1,0.0; 1,0.0; 1,0.0; 1,0.0;1,0.0; 1,0.0; 1,0.0; 1,0.0; 1,0.0
+Avg: 1,0.0
+#Vars: 2
+
+input20: nestedVar with 6 vars:
+1,0.4;  1, 0.4; 1, 0.1; 1,0.3;  1,0.3
+Avg: 1,0.3
+#Vars: 6
+
+input6: Producing Tools: Upper Limit 7:
+4,0.5;  5,0.5;  4,0.3;  4,0.3;  4,0.4; 4, 0.7; 5, 0.5; 4, 0.4; 5, 0.5;4,0.4;
+Avg: 4.1,
+#Vars: 4
+
+input11: two landmarks each for coal, ore: 0.6s, 7 examples
+input12: 4 landmarks each for coal, ore: 1.1s, 12 examples
+
+
