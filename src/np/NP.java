@@ -25,7 +25,7 @@ public class NP {
         System.out.print("Enter input filename (in GNPFinal/inputs/): ");
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 //        String inputFile = "input8.txt";
-        String inputFile = "laundry.txt";
+        String inputFile = "laundry_basket.txt";
 //        try {
 //            inputFile = br.readLine();
 //        } catch (IOException e) {

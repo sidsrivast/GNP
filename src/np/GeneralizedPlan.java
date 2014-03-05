@@ -151,6 +151,7 @@ public class GeneralizedPlan {
             System.out.println(gpNodeMap.get(gpNode1).toString());
             System.out.println(t.getNodeStruc(tnode1).toString());
             System.out.println("Error: attachment points not consistent");
+            this.writeGraphToFile("outputs/debug.dot");
             System.exit(-1);
         }
         
@@ -187,16 +188,18 @@ public class GeneralizedPlan {
     
     public String addIfSafe(String gpNode1, String axn, String gpNode2, 
             AbstractState struc){
-       //-1 System.out.println("Considering "+ gpNode1+" -> "+gpNode2);
+        System.out.println("Considering "+ gpNode1+" -> "+gpNode2);
 
         String addedEdge = this.addEdgeToGraph(gpNode1, gpNode2, axn);
         
-        if (!isTerminatingGraph(getContainingSCC(gpNode2))){
+        DirectedMultigraph<String, String> testGraph = (DirectedMultigraph<String, String>) this.gpGraph.clone();
+                
+        if (!isTerminatingGraph(getContainingSCC(testGraph, gpNode2))){
             System.out.println("Edge rejected");
             this.gpGraph.removeEdge(addedEdge);
             addedEdge = null;
         }
-        
+        System.out.println("Edge added");
         return addedEdge;
     }
     
@@ -219,17 +222,17 @@ public class GeneralizedPlan {
     
     
     public boolean isTerminatingSCC(DirectedSubgraph<String, String> scc){
-        boolean edgesRemoved = false;
+        Set<String> edgesRemoved = null;
         
 
         edgesRemoved = removeUncompensatedEdges(scc);
         
-        if (!edgesRemoved){
+        if (edgesRemoved.isEmpty()){
             return false;
         }
         
-        //return isTerminatingGraph(scc);
-        return true;
+        return isTerminatingGraph(scc);
+        //return true;
     }
     
     // Find an edge that decreases a variable that no other edge in this scc
@@ -274,7 +277,7 @@ public class GeneralizedPlan {
     }
     
    
-    public boolean removeUncompensatedEdges(DirectedSubgraph<String, String> scc){
+    public Set<String> removeUncompensatedEdges(DirectedSubgraph<String, String> scc){
         boolean edgesRemoved = false;
         Map<String, Set<String>> incVars = new HashMap<String, Set<String>>();
         Map<String, Set<String>> decVars = new HashMap<String, Set<String>>();
@@ -299,48 +302,51 @@ public class GeneralizedPlan {
         // Get the set of uncompensated vars
         // A variable is uncompensated if either 
         // it is decremented by every action affecting it OR
-        // it is incremented by every action affecting it
+        // it is incremented by every action affecting it and is not in the final interval
         Set<String> varsDecremented = new HashSet<String>(decVars.keySet());
         Set<String> varsIncremented = new HashSet<String>(incVars.keySet());
         varsDecremented.removeAll(varsIncremented);
         varsIncremented.removeAll(varsDecremented);
         
-        //The loop must terminate if either it has uncompensated decrementing variables or
-        // it has uncompensated incremented variables for which any node corresponds to a 
-        // non-max interval
-        if (!varsDecremented.isEmpty()){
-           // Set<String> toRemove = scc.vertexSet();
-           // scc.removeAllVertices(toRemove);
-            edgesRemoved = true;
-        }
-        
-        if (!edgesRemoved){
-            AbstractState s;
-            String arbitNode;
-            Iterator<String> sccNodeIterator;
-            for (Iterator<String> it = varsIncremented.iterator(); it.hasNext();) {
-                String var = it.next();
-                sccNodeIterator = scc.vertexSet().iterator();
-                if (sccNodeIterator.hasNext()){
-                    arbitNode = sccNodeIterator.next();
-                    if (this.getNodeStruc(arbitNode).getInterval(var).getUB() != -1){
-                        //Set<String> toRemove = scc.vertexSet();
-                        //scc.removeAllVertices(toRemove);
-                        edgesRemoved = true;
-                        break;
-                    }          
-                }
+        //All vars in varsIncremented and varsDecremented have a unique interval in all nodes in the SCC.
+        //compute incremented vars that are in the final interval
+        String arbitNode;
+        Iterator<String> sccNodeIterator = scc.vertexSet().iterator();
+        Set<String> terminalVars = new HashSet<String>();
+        for(String var:varsIncremented){
+            arbitNode = sccNodeIterator.next();
+            if (this.getNodeStruc(arbitNode).getInterval(var).getUB() != -1){
+                terminalVars.add(var);
             }
         }
+        if (!terminalVars.isEmpty()){
+            varsIncremented.removeAll(terminalVars);
+        }
+        //Any edge with changing a progress var can only be executed finitely many times   
+        Set<String> removed = new HashSet<String>();
+        removed.addAll(removeEdgesAffectingVars(scc, decVars, varsDecremented));
+        removed.addAll(removeEdgesAffectingVars(scc, incVars, varsIncremented));        
           
-        return edgesRemoved;
+        return removed;
+    }
+    
+    
+    public Set<String>  removeEdgesAffectingVars(DirectedSubgraph<String, String> scc, 
+            Map<String, Set<String>> varEdge, Set<String> varSet){
+        
+        Set<String> removed = new HashSet<String>();
+        for(String var:varSet){
+            removed.addAll(varEdge.get(var));
+        }
+        scc.removeAllEdges(removed);
+        return removed;    
     }
     
     
     // Find the scc containing a node. 
-    public DirectedSubgraph<String, String> getContainingSCC(String node){
+    public DirectedSubgraph<String, String> getContainingSCC(DirectedMultigraph G, String node){
         
-        StrongConnectivityInspector sci = new StrongConnectivityInspector<String, String>(this.gpGraph);
+        StrongConnectivityInspector sci = new StrongConnectivityInspector<String, String>(G);
         List<DirectedSubgraph<String,String>> sccs = sci.stronglyConnectedSubgraphs();
         
         for (DirectedSubgraph<String, String> scc:sccs){

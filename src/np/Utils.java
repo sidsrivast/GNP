@@ -7,6 +7,7 @@ package np;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import org.jgrapht.graph.DirectedMultigraph;
@@ -44,7 +45,17 @@ public class Utils {
     
     
     public static String getAxnStrFromEdge(String e){
-        return e.split("_")[0];
+        String[] eSegs = e.split("_");
+        String name = "";
+        
+        for(int i=0; i<eSegs.length-2; i++){
+            name += eSegs[i];
+            if (i<eSegs.length - 3){
+                name += "_";
+            }
+        }
+        
+        return name;
     }
    
     
