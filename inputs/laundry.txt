@@ -1,0 +1,9 @@
+/*Init*/
+clothesOnTable=5, clothesInGripper=0,  clothesInBasket=0
+/*Actions*/
+[pickFromTable] clothesInGripper<1:clothesInGripper++, clothesOnTable--
+[placeInBasket] clothesInGripper>0:clothesInBasket++, clothesInGripper--
+[pickFromBasket]
+[placeInWasher]
+/*Goal*/
+clothesOnTable<1,clothesInBasket>0
