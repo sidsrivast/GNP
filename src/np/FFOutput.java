@@ -44,7 +44,7 @@ public class FFOutput extends PlannerOutput {
                 System.out.println("Found no `:'. Stopping search for actions.");
                 break;
             }
-            planActions.add(indexAxn[1].trim().replaceFirst(" ", "; "));
+            planActions.add(indexAxn[1].trim().replaceFirst(" ", "; ").toLowerCase());
         }
         
         System.out.println("Extracted plan with " + 
