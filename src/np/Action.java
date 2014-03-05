@@ -68,7 +68,7 @@ public class Action {
     public String toString(){
         String s;
         
-        s = name + "\n  Preconditions: ";
+        s = name + "\n      Preconditions: ";
         s += precons.toString();
         s += "\n      Effects: ";
         
@@ -79,7 +79,7 @@ public class Action {
         for (String var:varsIncremented){
             s+= var+"++; ";
         }
-
+        s+="\n";
         
         return s;
     }

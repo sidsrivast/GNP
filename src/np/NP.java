@@ -24,7 +24,8 @@ public class NP {
         
         System.out.print("Enter input filename (in GNPFinal/inputs/): ");
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        String inputFile = "input8.txt";
+//        String inputFile = "input8.txt";
+        String inputFile = "laundry.txt";
 //        try {
 //            inputFile = br.readLine();
 //        } catch (IOException e) {
@@ -36,6 +37,6 @@ public class NP {
 
         System.out.format("%s\n\n",myDomain.toString());
         HybridSearch searchObj = new HybridSearch(myDomain);
-        searchObj.doSearch("output");
+        searchObj.doSearch("outputs/output");
     }
 }

@@ -164,6 +164,7 @@ public class NPinput {
     
     private static List<Action> getActions(Map<String, String> sections){
         String preconAxn[], effectStr, axnSection = sections.get("Actions");
+        String nameAxn[], axnName="";
         Precondition precon;
         List<Action> actionSet = new ArrayList<Action>();
         Map<String, Set<String>> effects;
@@ -172,16 +173,22 @@ public class NPinput {
             if (axnStr.isEmpty()){
                 continue;
             }
-
+            nameAxn = axnStr.split("]");
+            if (nameAxn.length == 2){
+                axnName = nameAxn[0].replace("[", "");
+                axnStr = nameAxn[1];
+                System.out.format("Got action name %s", axnName);
+            }
             preconAxn = axnStr.split(":");
             /* If the precon or effects refer to a landmarked variable, this action
              * needs to be compiled.
              */               
             precon = getPreconditions(preconAxn[0]);
             effects = getEffects(preconAxn[1]);
-            String name = "A" + Integer.toString(i);
-            Action a = new Action(effects.get("VI"), effects.get("VD"), 
-                    precon, name);
+            if (axnName.equals("")){
+                axnName = "A" + Integer.toString(i);
+            }
+            Action a = new Action(effects.get("VI"), effects.get("VD"), precon, axnName);
             actionSet.add(a);
             i+=1;
         }

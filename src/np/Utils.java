@@ -62,7 +62,7 @@ public class Utils {
         }
         for(String e:traceGraph.edgeSet()){
             s+=traceGraph.getEdgeSource(e)+"->"+traceGraph.getEdgeTarget(e)+
-                    " [label=\""+ d.getAction(getAxnStrFromEdge(e)).getEffectString()+"\"];"+ "\n";
+                    " [label=\""+ d.getAction(getAxnStrFromEdge(e)).getName()+"\"];"+ "\n";
         }
         s+="}\n";
         return s;

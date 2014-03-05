@@ -107,7 +107,7 @@ public class GeneralizedPlan {
             for (String nextTNode:nextNodes){
                 // add an edge from the current gp node to the next non-terminal
                 // node in the trace. Include edge searches for a node to merge
-                // with. If none is found, adds and returns a new node.
+                // with. If none is found, *adds and returns a new node*.
                 gpTargetNode = this.includeEdge(t, axn, currentTraceNode, nextTNode, currentGPNode);
                 if (nextTraceNode != null && nextTNode.equals(nextTraceNode)){
                     nextGPNode = gpTargetNode;
@@ -297,7 +297,7 @@ public class GeneralizedPlan {
         }
         
         // Get the set of uncompensated vars
-        // A variable is un-compensated if either 
+        // A variable is uncompensated if either 
         // it is decremented by every action affecting it OR
         // it is incremented by every action affecting it
         Set<String> varsDecremented = new HashSet<String>(decVars.keySet());

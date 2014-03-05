@@ -44,7 +44,9 @@ public class HybridSearch {
         long duration = 0;
         
         for(i=0;i<25;i++){
+            System.out.format("Abstract State: \n %s\n ", gp.getNodeStruc(selectedNode).toStringShort());
             c = gp.getNodeStruc(selectedNode).getInstance(0, 5);
+            System.out.print("Instance:");
             System.out.print(c.toString());
             System.out.println("\n\n");
             myDomain.toProblemPDDLFile("inputs/testP.pddl", c);
@@ -68,6 +70,7 @@ public class HybridSearch {
             
             selectedNode = getSelectedNodeAuto();
             if (selectedNode.equals("-1")){
+                System.out.format("No open nodes!\n");
                 System.out.format("Total time taken: %f\n", duration*1.0/1000);
                 System.exit(0);
             }
