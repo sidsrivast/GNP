@@ -13,6 +13,7 @@ import java.util.*;
  */
 public class Precondition {
     private Map<String, Interval> preconMap = new HashMap<String, Interval>(); 
+    private Map<String, Boolean> boolMap = new HashMap<String, Boolean>();
     
     Precondition(){}
     
@@ -22,6 +23,7 @@ public class Precondition {
         Map<String, Integer> appropriateMap= null;
         Set<String> varSet = new HashSet<String>();
         int bound = 0;
+        Boolean tval = null;
         
         
         for (Inequality ineq: inequalities){
@@ -36,7 +38,7 @@ public class Precondition {
                 bound = ineq.getConstant();
                 varSet.add(ineq.getVar());
             }
-            
+                              
             if (appropriateMap != null && (!appropriateMap.containsKey(ineq.getVar()))){
                     appropriateMap.put(ineq.getVar(), bound);
             } 
@@ -59,29 +61,42 @@ public class Precondition {
                 }
             }
             
-            /* Convert ub, lb lists to intervals */
-            int ub, lb;
-            for (String var:varSet){
-                ub = -1;
-                lb = 0;
-                if (ubMap.containsKey(var)){ ub = ubMap.get(var);}
-                if (lbMap.containsKey(var)){ lb = lbMap.get(var);}
-                preconMap.put(var, new Interval(lb, ub));
+            if (ineq.isBoolean()){
+                boolMap.put(ineq.getVar(),ineq.getBoolVal());
+            }
+            else{
+                /* Convert ub, lb lists to intervals */
+                int ub, lb;
+                for (String var:varSet){
+                    ub = -1;
+                    lb = 0;
+                    if (ubMap.containsKey(var)){ ub = ubMap.get(var);}
+                    if (lbMap.containsKey(var)){ lb = lbMap.get(var);}
+                    preconMap.put(var, new Interval(lb, ub));
+                }
             }
         }
     }
        
     
-    public Map<String, Interval> getMap(){
+    public Map<String, Interval> getPreconMap(){
         return this.preconMap;
     }
     
+    public Map<String, Boolean> getBoolMap(){
+        return this.boolMap;
+    }
+    
     public void addFrom(Precondition precon2){
-        Map<String, Interval> srcMap = precon2.getMap();
+        Map<String, Interval> srcMap = precon2.getPreconMap();
         for (String var:srcMap.keySet()){
             preconMap.put(var.toString(), new Interval(srcMap.get(var).getLB(),
                                                        srcMap.get(var).getUB()));
         }
+        Map<String, Boolean> srcBoolMap = precon2.getBoolMap();
+        for (String var:srcBoolMap.keySet()){
+            boolMap.put(var.toString(), srcBoolMap.get(var));
+        }    
     }
     
        
@@ -110,11 +125,9 @@ public class Precondition {
         String obj;
         
         if (qmark){
-            obj = "?o";
-        }
+            obj = "?o";}
         else{
-            obj = "o1";
-        }
+            obj = "o1";}
         
         if (mode.equals("raw")){
             for (String var:preconMap.keySet()){
@@ -140,6 +153,15 @@ public class Precondition {
                 }
             }
             s="(and " + s + ")";
+            String terminator = "";
+            for (String var:this.boolMap.keySet()){
+                if (this.boolMap.get(var)){
+                    s+= "(not ";
+                    terminator = ")";
+                }
+                s += "(" + var + " " + obj + ")" + terminator;       
+            }
+            
         }
         
         
@@ -158,6 +180,13 @@ public class Precondition {
         for (String var:preconMap.keySet()){
             if (!preconMap.get(var).greaterOrEqualTo(s.getInterval(var))){
                 satisfied = false;
+                break;
+            }
+        }
+        
+        for (String var:this.boolMap.keySet()){
+            satisfied = (this.boolMap.get(var) == s.getBoolValues().get(var));
+            if (!satisfied) {
                 break;
             }
         }

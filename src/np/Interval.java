@@ -8,7 +8,7 @@ package np;
  *
  * @author Sid
  */
-public class Interval {
+public class Interval extends Value {
     /* 
      * Intervals will be closed below and open above.   
      */

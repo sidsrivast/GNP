@@ -109,28 +109,29 @@ public class NPinput {
     private static ConcreteState getConcreteInitState(Map<String, String> sections){
         String initSection = sections.get("Init");
         Map<String, Integer> stateEssentials = new HashMap<String, Integer>();
+        Map<String, Boolean> stateEssentialsBool = new HashMap<String, Boolean>();
         
         List<Inequality> inequalities = getInequalities(initSection, false);
         
         for (Inequality ineq:inequalities){
-            if (!ineq.isAssignment()){
-                System.out.format("Error: concrete state specified using non-assignment %s\n", ineq.getString());
-                System.exit(-1);
-            }
-            
-            if (stateEssentials.containsKey(ineq.getVar())){
+            if (stateEssentials.containsKey(ineq.getVar()) || stateEssentialsBool.containsKey(ineq.getVar())){
                 System.out.format("Error: concrete state specification reassigns value to variable. <%s>\n", ineq.getString());
                 System.exit(-1);
             }
-            
-            stateEssentials.put(ineq.getVar(),ineq.getConstant());
+            if (ineq.isBoolean()){
+               stateEssentialsBool.put(ineq.getVar(), ineq.getBoolVal()); 
+            }
+            else if (ineq.isAssignment()){
+               stateEssentials.put(ineq.getVar(),ineq.getConstant());
+            }
+            else{
+                System.out.format("Error: concrete state specified using unknown format %s\n", ineq.getString());
+                System.exit(-1);
+            }        
         }
         
-        return new ConcreteState(stateEssentials);
-    }
-    
-    
-    
+        return new ConcreteState(stateEssentials, stateEssentialsBool);
+    }  
     
     
     private static Precondition getPreconditions(String preconStr){
@@ -143,7 +144,9 @@ public class NPinput {
         
         effects.put("VI", new HashSet<String>());
         effects.put("VD", new HashSet<String>());
-        
+        effects.put("VT", new HashSet<String>()); //boolean vars set to T
+        effects.put("VF", new HashSet<String>()); //boolean vars set to F
+  
         for (String effect:effectStr.split(", *")){
             if (effect.contains("++")){
                 effects.get("VI").add(effect.replace("++", "").trim());
@@ -151,12 +154,13 @@ public class NPinput {
             else if (effect.contains("--")){
                 effects.get("VD").add(effect.replace("--", "").trim());
             }
-            else{
-                System.out.println("Error: unknown effect "+effect);
-                return null;
+            else if (effect.contains("!")){
+                effects.get("VF").add(effect.replace("!", "").trim());
             }
-        }
-        
+            else {
+                effects.get("VT").add(effect.trim());
+            }
+        }        
         return effects;
         
     }
@@ -188,7 +192,8 @@ public class NPinput {
             if (axnName.equals("")){
                 axnName = "A" + Integer.toString(i);
             }
-            Action a = new Action(effects.get("VI"), effects.get("VD"), precon, axnName);
+            Action a = new Action(effects.get("VI"), effects.get("VD"), effects.get("VF"), effects.get("VT"), 
+                                    precon, axnName);
             actionSet.add(a);
             i+=1;
         }
@@ -199,19 +204,19 @@ public class NPinput {
     private static Precondition getGoal(Map<String, String> sections){
         return getPreconditions(sections.get("Goal"));
     }
-
-    
-
     
     
     private static void setLandmarks(List<Inequality> inequalities){  
         Integer value;
+        
         for (Inequality ineq:inequalities){
             value = ineq.getConstant();
+            if (ineq.isAssignment()){
+                
+            }
             if (ineq.getComparator().equals(">")){
                 value = ineq.getConstant()+1;
             }
-
             landmarks.addToBunch(ineq.getVar(), value);
         }
         

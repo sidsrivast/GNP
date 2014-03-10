@@ -19,6 +19,9 @@ public class Action {
     private String name;
     private Set<String> varsDecremented;
     private Set<String> varsIncremented;
+    private Set<String> boolVars;
+    private Set<String> varsMadeT;
+    private Set<String> varsMadeF;
     private Precondition precons = new Precondition();
     
     /*
@@ -32,9 +35,11 @@ public class Action {
     /*
      * Initializes using a pre-constructed Precondition object.
      */
-    Action(Set<String> VI, Set<String> VD, Precondition precon, String axnName ){
+    Action(Set<String> VI, Set<String> VD, Set<String> VF, Set<String> VT, Precondition precon, String axnName ){
         varsDecremented = new HashSet<String>(VD);
         varsIncremented = new HashSet<String>(VI);
+        varsMadeT = new HashSet<String>(VT);
+        varsMadeF = new HashSet<String>(VF);
         name = axnName;        
         
         precons.addFrom(precon);
@@ -58,7 +63,7 @@ public class Action {
     public Set<String> getIncVars(){
         return varsIncremented;
     }
-    
+   
     
     public Precondition getPrecons(){
         return this.precons;
@@ -78,6 +83,14 @@ public class Action {
         
         for (String var:varsIncremented){
             s+= var+"++; ";
+        }
+        
+        for (String var:this.varsMadeF){
+            s+= var+"=F";
+        }
+        
+        for (String var:this.varsMadeT){
+            s+= var+"=T";
         }
         s+="\n";
         
@@ -101,6 +114,12 @@ public class Action {
         for (String var:varsIncremented){
             effectStr += "\t\t(increase ("+ var +" ?o)" + " 1)\n";
         }
+        for (String var:this.varsMadeF){
+            effectStr += "\t\t(not (" + var + " ?o))\n";
+        }
+        for (String var:this.varsMadeT){
+            effectStr += "\t\t(" + var + " ?o)\n";
+        }
         effectStr += "\t\t)";
         
         return init + paramStr + preconStr + effectStr + "\n )\n\n";
@@ -118,6 +137,12 @@ public class Action {
             }
             for (String var:this.varsIncremented){
                 s.setValue(var, s.getValue(var)+1);
+            }
+            for (String var:this.varsMadeF){
+                s.setValue(var, false);
+            }
+            for (String var:this.varsMadeT){
+                s.setValue(var, true);
             }
             return s;
         }
@@ -153,16 +178,16 @@ public class Action {
      * Conversion from state-list to state set.
      */
     private Set<AbstractState> makeAbsStateSet(
-            LinkedList<HashMap<String, Interval>> stateQ){
+            LinkedList<HashMap<String, Value>> stateQ){
         Set<AbstractState> absStateSet = new HashSet<AbstractState>();
         
         AbstractState as;
-        Map<String, Interval> abstractStateEssentials;
+        Map<String, Value> abstractStateEssentialValues;
         
         ListIterator lit = stateQ.listIterator();
         while (lit.hasNext()){
-            abstractStateEssentials = (Map<String, Interval>) lit.next();
-            as = new AbstractState(abstractStateEssentials);
+            abstractStateEssentialValues = (Map<String, Value>) lit.next();
+            as = new AbstractState(abstractStateEssentialValues);
             absStateSet.add(as);
         }
         
@@ -175,33 +200,26 @@ public class Action {
      * computed by getPossibleValues.
      */
     private Set<AbstractState> getStates(HashMap<String, 
-            Set<Interval>> possibleValues){
+            Set<Value>> possibleValues){
 
-        LinkedList<HashMap<String, Interval>> stateQ = 
-                new LinkedList<HashMap<String, Interval>>();
-
-        stateQ.addLast(new HashMap<String, Interval>());
-        
+        LinkedList<HashMap<String, Value>> stateQ = 
+                new LinkedList<HashMap<String, Value>>();
         int dimension = possibleValues.size();
         String currentVariable;
-        
-        HashMap<String, Interval> partialState, partialStateX;
-
-        
+        HashMap<String, Value> partialState, partialStateX;
+        stateQ.addLast(new HashMap<String, Value>());
+              
         while (true){
             partialState = stateQ.removeFirst();
-
             if (partialState.size() == dimension){
                 stateQ.add(partialState);
                 return makeAbsStateSet(stateQ);
             }
+            currentVariable = getUnassignedVariable(partialState.keySet(), possibleValues.keySet());
             
-            currentVariable = getUnassignedVariable(partialState.keySet(), 
-                    possibleValues.keySet());
-            
-            for (Interval  intvl: possibleValues.get(currentVariable)){
-                partialStateX = new HashMap<String, Interval>(partialState);
-                partialStateX.put(currentVariable, intvl);
+            for (Value  val: possibleValues.get(currentVariable)){
+                partialStateX = new HashMap<String, Value>(partialState);
+                partialStateX.put(currentVariable, val);
                 stateQ.addLast(partialStateX);
             }
         }
@@ -212,10 +230,9 @@ public class Action {
      * Get a mapping from each variable to the set of possible values it can 
      * have after an application of this action.
      */
-    private HashMap<String, Set<Interval>> getPossibleValues(AbstractState s, LandmarkBunch lbunch) {
+    private HashMap<String, Set<Value>> getPossibleValues(AbstractState s, LandmarkBunch lbunch) {
         Iterator<String> x;
-        HashMap<String, Set<Interval>> possibleValues = 
-                new HashMap<String, Set<Interval>>();
+        HashMap<String, Set<Value>> possibleValues = new HashMap<String, Set<Value>>();
         String v;
         HashSet<String> allVars = new HashSet<String>();
         
@@ -224,7 +241,7 @@ public class Action {
         while (x.hasNext()){
             v = x.next();
             //possibleValues.put(v, s.getInterval(v).decrement(lbunch.getLandmarksFor(v)));
-            possibleValues.put(v, new HashSet<Interval>());
+            possibleValues.put(v, new HashSet<Value>());
             possibleValues.get(v).add(s.getInterval(v));
             possibleValues.get(v).add(s.getInterval(v).getNeighboringInterval(lbunch, -1, v));
         }
@@ -232,7 +249,7 @@ public class Action {
         x = varsIncremented.iterator();
         while (x.hasNext()){
             v = x.next();
-            possibleValues.put(v, new HashSet<Interval>());
+            possibleValues.put(v, new HashSet<Value>());
             /* Test: [0,1) denotes the special case of [0,0]; increase guaranteed to move out of this
              interval */
             if (s.getInterval(v).getUB()!=1) {
@@ -248,9 +265,24 @@ public class Action {
         while (x.hasNext()){
             v = x.next();
             if (!(possibleValues.containsKey(v))) {
-                possibleValues.put(v, new HashSet<Interval>());
+                possibleValues.put(v, new HashSet<Value>());
                 possibleValues.get(v).add(s.getInterval(v));
             }
+        }
+        
+        for (String var:s.getBoolValues().keySet()){
+            possibleValues.put(var, new HashSet<Value>());
+
+            if (this.varsMadeT.contains(var)){
+                possibleValues.get(var).add(new Bool(true));
+            }
+            else if (this.varsMadeF.contains(var)){
+                possibleValues.get(var).add(new Bool(false));
+            }
+            else {
+                possibleValues.get(var).add(new Bool(s.getBoolValues().get(var)));
+            }
+        
         }
 
         return possibleValues;

@@ -20,8 +20,12 @@ import java.util.TreeSet;
  */
 public class AbstractState {
     private Map<String, Integer> rawValues = new HashMap<String, Integer>();
-    private Map<String, Interval> varIntervals = new HashMap<String, Interval>();        
+    private Map<String, Interval> varIntervals = new HashMap<String, Interval>(); 
+    private Map<String, Boolean> boolValues = new HashMap<String, Boolean>();
             
+    public void setBoolValue(String var, Boolean value){
+        this.boolValues.put(var, value);
+    }
     
     AbstractState(int n, LandmarkBunch lbunch){
         int i;
@@ -32,9 +36,10 @@ public class AbstractState {
     }
     
     
-    AbstractState(Map<String, Integer> origRaw, Map<String, Interval> origIntervals){
+    AbstractState(Map<String, Integer> origRaw, Map<String, Interval> origIntervals, Map<String, Boolean> boolVars){
         rawValues.putAll(origRaw);
         varIntervals.putAll(origIntervals);
+        boolValues.putAll(boolVars);
     }
     
     AbstractState(){
@@ -42,16 +47,38 @@ public class AbstractState {
     }
     
     
-    AbstractState(Map<String, Interval> abstractEssentials){
-        for (String var: abstractEssentials.keySet()){
-            setInterval(var, abstractEssentials.get(var));
+    AbstractState(Map<String, Value> abstractEssentialValues){
+        Value val = null;
+        for (String var:abstractEssentialValues.keySet()){
+            val = abstractEssentialValues.get(var);
+            if ( val instanceof Bool){
+                this.setBoolValue(var, val.getValue());
+            }
+            else if (val instanceof Interval){
+                this.setInterval(var, val);
+            }
+            else{
+                System.out.format("Found unknown value for variable %s", var);
+                System.exit(-1);
+            }
         }
     }
     
-    AbstractState(Map<String, Integer> stateEssentials, LandmarkBunch lbunch){
+    
+    AbstractState(Map<String, Interval> abstractEssentials, Map<String, Boolean> abstractEssentialsBool){
+        /* TBD: clean up: single call!!*/
+        for (String var: abstractEssentials.keySet()){
+            setInterval(var, abstractEssentials.get(var));
+        }
+        
+        this.boolValues.putAll(abstractEssentialsBool);
+    }
+    
+    AbstractState(Map<String, Integer> stateEssentials, Map<String, Boolean> stateEssentialsBool, LandmarkBunch lbunch){
         for (String x: stateEssentials.keySet()){
             setValue(x, stateEssentials.get(x), lbunch);
         }
+        this.boolValues.putAll(stateEssentialsBool);
     }
     
     
@@ -61,7 +88,7 @@ public class AbstractState {
     
     
     public AbstractState getCopy(){        
-        return  new AbstractState(getRawValues(), varIntervals);
+        return  new AbstractState(getRawValues(), this.varIntervals, this.boolValues);
     }
     
     
@@ -176,6 +203,9 @@ public class AbstractState {
             CS.setValue(var, varLB);
             }
         }
+        for (String var:this.boolValues.keySet()){
+            CS.setBoolValue(var, this.boolValues.get(var));
+        }
         return CS;
     }
 
@@ -191,5 +221,9 @@ public class AbstractState {
      */
     public void setRawValues(Map<String, Integer> rawValues) {
         this.rawValues = rawValues;
+    }
+    
+    public Map<String, Boolean> getBoolValues(){
+        return this.boolValues;
     }
 }

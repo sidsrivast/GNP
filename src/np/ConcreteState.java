@@ -27,13 +27,21 @@ public class ConcreteState extends AbstractState {
     }
     
     
-     ConcreteState(Map<String, Integer> stateEssentials){
+     ConcreteState(Map<String, Integer> stateEssentials, Map<String, Boolean> stateEssentialsBool){
         for (String x: stateEssentials.keySet()){
             setValue(x, stateEssentials.get(x));
         }
+        for (String x: stateEssentialsBool.keySet()){
+            setValue(x, stateEssentialsBool.get(x));
+        }
     }
   
+     
+     public void setValue(String x, Boolean tval){
+         this.setBoolValue(x, tval);
+     }
 
+     
      public void setValue(String x, int n){
         getRawValues().put(x, n);
         this.setInterval(x, new Interval(n, n+1));
@@ -60,6 +68,6 @@ public class ConcreteState extends AbstractState {
     
     
     public AbstractState getAbstraction(LandmarkBunch lbunch){
-        return new AbstractState(getRawValues(), lbunch);
+        return new AbstractState(getRawValues(),this.getBoolValues(), lbunch);
     }
 }
