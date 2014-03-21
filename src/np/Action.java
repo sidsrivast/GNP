@@ -86,11 +86,11 @@ public class Action {
         }
         
         for (String var:this.varsMadeF){
-            s+= var+"=F";
+            s+= var+"=F; ";
         }
         
         for (String var:this.varsMadeT){
-            s+= var+"=T";
+            s+= var+"=T; ";
         }
         s+="\n";
         

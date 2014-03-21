@@ -17,6 +17,10 @@ public class Precondition {
     
     Precondition(){}
     
+    Precondition(Map<String, Boolean> booleans){
+        boolMap.putAll(booleans);
+    }
+    
     Precondition(List<Inequality> inequalities){
         Map<String, Integer> ubMap = new HashMap<String, Integer>();
         Map<String, Integer> lbMap = new HashMap<String, Integer>();
@@ -103,24 +107,24 @@ public class Precondition {
     
     @Override
     public String toString(){
-        return toString("raw", true);
+        return toString("raw", true, false);
     }
-    
-    
+        
     public String toPDDLString(){
-        return toString("PDDL", true);
+        return toString("PDDL", true, false);
     }
-    
-    
+      
     public String toPDDLGoalString(){
-        return toString("PDDL", false);
+        return toString("PDDL", false, false);
     }
     
-    
+    public String toPDDLInitString(){
+        return toString("PDDL", false, true);
+    } 
     /*
      * Return a readable string form of precons.
      */
-    public String toString(String mode, boolean qmark){
+    public String toString(String mode, boolean qmark, boolean initMode){
         String s = new String();
         String obj;
         
@@ -132,6 +136,9 @@ public class Precondition {
         if (mode.equals("raw")){
             for (String var:preconMap.keySet()){
                 s += var + " -> " + preconMap.get(var).toString() +"; ";
+            }
+            for (String var:boolMap.keySet()){
+                s += var + " -> " + boolMap.get(var).toString() +"; ";
             }
             s += "\n";
         }
@@ -152,15 +159,23 @@ public class Precondition {
                     }
                 }
             }
-            s="(and " + s + ")";
-            String terminator = "";
+            String terminator, negatedVal;
             for (String var:this.boolMap.keySet()){
-                if (this.boolMap.get(var)){
-                    s+= "(not ";
-                    terminator = ")";
+                terminator = "";
+                negatedVal = "";
+                if (!this.boolMap.get(var)){
+                    if (!initMode){
+                        negatedVal = "(not ";
+                        terminator = ")";
+                    }else{
+                        continue;}
                 }
-                s += "(" + var + " " + obj + ")" + terminator;       
+                 s += negatedVal + "(" + var + " " + obj + ")" + terminator;                 
             }
+            if (!initMode){
+                s="(and " + s + ")";}
+            
+
             
         }
         

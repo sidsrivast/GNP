@@ -11,7 +11,7 @@ package np;
 public class Inequality {
     private String rawString;
     private String var;
-    private String comparator="";
+    private String comparator="-1";
     private int constant;
     private Boolean tvalue=null;
     private Boolean boolAssignment = false;

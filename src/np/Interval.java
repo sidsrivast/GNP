@@ -21,7 +21,10 @@ public class Interval extends Value {
         upperBound = ub;
     }
     
-    
+    public Interval getInterval(){
+        return new Interval(lowerBound,upperBound);
+    }
+            
     public int getLB(){
         return lowerBound;
     }

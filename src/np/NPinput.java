@@ -181,7 +181,7 @@ public class NPinput {
             if (nameAxn.length == 2){
                 axnName = nameAxn[0].replace("[", "");
                 axnStr = nameAxn[1];
-                System.out.format("Got action name %s", axnName);
+                System.out.format("Got action name %s ", axnName);
             }
             preconAxn = axnStr.split(":");
             /* If the precon or effects refer to a landmarked variable, this action

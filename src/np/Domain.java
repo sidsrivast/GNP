@@ -83,13 +83,17 @@ public class Domain {
         fixedDec += "\n\t(:requirements :typing :fluents)";
         fixedDec += "\n\t(:types dtype)";
 
-        functionDec = "\n\t(:functions";
-                
+        functionDec = "\n\t(:functions";        
         for (String var:initialState.getVars()){
             functionDec += "\n\t\t("+ var+" ?o - dtype)";
         }
-        
         functionDec += ")\n";
+        
+        String predicateDec = "(:predicates";
+        for (String var:initialState.getBoolValues().keySet()){
+            predicateDec += "\n\t\t(" + var + " ?o - dtype)";
+        }
+        predicateDec += ")\n";
         
         axnDec = "";
         Integer i=0;
@@ -98,7 +102,7 @@ public class Domain {
             axnDec += axn.toPDDLString();
             i++;
         }
-        return fixedDec + functionDec + axnDec +")\n";
+        return fixedDec + functionDec + predicateDec + axnDec +")\n";
     }
     
     

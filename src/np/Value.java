@@ -11,6 +11,16 @@ package np;
 public class Value {
     
     
-    
-    
+
+ public Boolean getValue(){
+        System.out.println("Must be overriden");
+        return null;
+    }
+
+ 
+ public Interval getInterval(){
+        System.out.println("Must be overriden");
+        return null;
+    }
+
 }

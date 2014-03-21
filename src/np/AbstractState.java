@@ -27,6 +27,15 @@ public class AbstractState {
         this.boolValues.put(var, value);
     }
     
+    public Set<String> getBoolVars(){
+        return this.boolValues.keySet();
+    }
+    
+    public Map<String, Value> getStrAllBut(Set <String> vars){
+        Map<String, Value> varValues = new HashMap<String, Value>();
+        return varValues;
+    }
+    
     AbstractState(int n, LandmarkBunch lbunch){
         int i;
         
@@ -55,7 +64,7 @@ public class AbstractState {
                 this.setBoolValue(var, val.getValue());
             }
             else if (val instanceof Interval){
-                this.setInterval(var, val);
+                this.setInterval(var, val.getInterval());
             }
             else{
                 System.out.format("Found unknown value for variable %s", var);
@@ -117,6 +126,16 @@ public class AbstractState {
     }
     
     
+    public boolean getBoolValue(String var){
+        if (!this.getBoolValues().containsKey(var)){
+            System.out.println("Error: Var " + var +" not present in state");
+            System.exit(-1);
+        }
+       
+        return this.boolValues.get(var);
+      
+    }
+    
     public boolean equivalent(AbstractState s){
         Interval thisInterval, sInterval;
         
@@ -124,6 +143,12 @@ public class AbstractState {
             thisInterval = getInterval(var);
             sInterval = s.getInterval(var);
             if (!thisInterval.greaterOrEqualTo(sInterval) || !sInterval.greaterOrEqualTo(thisInterval)){
+                return false;
+            }
+        }
+        
+        for (String var:this.boolValues.keySet()){
+            if (this.getBoolValue(var) != s.getBoolValue(var)){
                 return false;
             }
         }
@@ -138,12 +163,17 @@ public class AbstractState {
     public String toString(){
 
         SortedSet<String> variables = new TreeSet<String>(varIntervals.keySet());
+        SortedSet<String> boolVars = new TreeSet<String>(this.boolValues.keySet());
+        
         String s = new String();
         
         for (String var: variables){
             s+=var+"="+varIntervals.get(var).toString()+"; ";
         }
-        
+        for (String var: boolVars){
+            s+=var+"="+boolValues.get(var).toString()+"; ";
+        }
+       
         if (!rawValues.isEmpty()){
             s+=" RAW: ";
             for (String var:variables){
@@ -165,6 +195,10 @@ public class AbstractState {
         for (String var: variables){
             s+= var+"="+ varIntervals.get(var).toString()+" ";
         }
+        for (String var: this.boolValues.keySet()){
+            s+= var+"="+ this.boolValues.get(var).toString()+" ";
+        }
+        
         return s;
     }
     

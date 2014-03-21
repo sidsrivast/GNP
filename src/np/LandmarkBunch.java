@@ -105,6 +105,9 @@ public class LandmarkBunch {
     
     public int getNextLandmarkForValue(String var, int value){
         int ub = -1;
+        if (!bunch.containsKey(var)){
+            this.addToBunch(var, 1);
+        }
         for (int i=0;i<bunch.get(var).size();i++){
             if (value<bunch.get(var).get(i)){
                 ub = bunch.get(var).get(i);

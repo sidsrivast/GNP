@@ -58,6 +58,10 @@ public class ConcreteState extends AbstractState {
             PDDLStr += "\t(=" + " (" + var + " o1) " + getRawValues().get(var).toString()
                     +  ")\n";
         }
+        
+        Precondition  boolInitPrecon = new Precondition(this.getBoolValues());
+        PDDLStr += "\t" + boolInitPrecon.toPDDLInitString();
+        
         return PDDLStr;
     }
     
