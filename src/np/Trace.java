@@ -3,10 +3,10 @@
  * and open the template in the editor.
  */
 package np;
+import org.jgrapht.alg.StrongConnectivityInspector;
+import org.jgrapht.graph.DirectedMultigraph;
+
 import java.util.*;
-import org.jgrapht.*;
-import org.jgrapht.graph.*;
-import org.jgrapht.alg.*;
 /**
  *
  * @author Sid
@@ -77,7 +77,8 @@ public class Trace {
         Set<AbstractState> nextStates;
         List<String> addedNodes= new ArrayList<String>();
         String addedNode, prevNode;
-        
+        Map<AbstractState, Map<String, Value>> diffLabels;
+                
         prevNode = this.addNode(prevState);
         
         for (Action axn:actionSequence){
@@ -114,12 +115,12 @@ public class Trace {
     
     
     public void writeTraceDot(String path){
-        Utils.writeToFile(Utils.graphToDotString(traceGraph, this.nodeMap, this.currentDomain), path);
+        Utils.writeToFile(Utils.GPToDotString(traceGraph, this.nodeMap, this.currentDomain), path);
     }
     
     
     public String getTraceDot(){
-        return Utils.graphToDotString(traceGraph, this.nodeMap, this.currentDomain);
+        return Utils.GPToDotString(traceGraph, this.nodeMap, this.currentDomain);
     }
     
     
