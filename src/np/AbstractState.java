@@ -1,13 +1,7 @@
 
 package np;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Random;
-import java.util.Set;
-import java.util.SortedSet;
-import java.util.TreeSet;
+import java.util.*;
 
 /**
  *
@@ -33,6 +27,16 @@ public class AbstractState {
     
     public Map<String, Value> getStrAllBut(Set <String> vars){
         Map<String, Value> varValues = new HashMap<String, Value>();
+        for (String var: varIntervals.keySet()){
+            if (!vars.contains(var)){
+                varValues.put(var, varIntervals.get(var));
+            }
+        }
+        for (String var: boolValues.keySet()){
+            if (!vars.contains(var)){
+                varValues.put(var, new Bool(boolValues.get(var)));
+            }
+        }
         return varValues;
     }
     
