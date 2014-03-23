@@ -51,6 +51,15 @@ public class Interval extends Value {
         return "["+ lowerBound.toString() +  ", " + upperBound.toString() + ")";
     }
     
+    
+    public String toIneqString(String var){
+        String ubString = upperBound.toString();
+        if (ubString.equals("-1")){
+            ubString = "INF";
+        }
+        return lowerBound.toString() + " <= " + var + " < " +  ubString;
+    }
+    
     public Boolean greaterOrEqualTo(Interval v){
         boolean lowerBoundOK = (lowerBound <= v.getLB());
         boolean upperBoundOK;
@@ -74,6 +83,10 @@ public class Interval extends Value {
             return true;
         }
         return false;
+    }
+    
+    public Boolean equals(Interval i2){
+        return ((this.getLB() == i2.getLB()) && (this.getUB() == i2.getUB()));
     }
     
 }
