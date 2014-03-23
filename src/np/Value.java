@@ -22,5 +22,9 @@ public class Value {
         System.out.println("Must be overriden");
         return null;
     }
+ 
+ public String toIneqString(String var){
+     return "ineq form not implemented";
+ }
 
 }
