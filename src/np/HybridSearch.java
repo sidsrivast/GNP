@@ -72,11 +72,13 @@ public class HybridSearch {
             if (selectedNode.equals("-1")){
                 System.out.format("No open nodes!\n");
                 System.out.format("Total time taken: %f\n", duration*1.0/1000);
+                Utils.writeGraphToDotFile(gp.getDual(), outputPrefix+"_dual");
                 System.exit(0);
             }
             startTime = System.currentTimeMillis();
             
         }
+        Utils.writeGraphToDotFile(gp.getDual(), outputPrefix+"_dual");
     }
 
     
