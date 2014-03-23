@@ -4,10 +4,11 @@
  */
 package np;
 
-import java.util.*;
 import org.jgrapht.alg.StrongConnectivityInspector;
 import org.jgrapht.graph.DirectedMultigraph;
 import org.jgrapht.graph.DirectedSubgraph;
+
+import java.util.*;
 
 /**
  * Stores a generalized plan. The main object is a directed multigraph
@@ -74,7 +75,7 @@ public class GeneralizedPlan {
     
     public void writeGraphToFile(String path){
         
-        Utils.writeToFile(Utils.graphToDotString(gpGraph, this.gpNodeMap, this.GPDomain), path);
+        Utils.writeToFile(Utils.GPToDotString(gpGraph, this.gpNodeMap, this.GPDomain), path);
         
     }
     
@@ -374,5 +375,63 @@ public class GeneralizedPlan {
     }
     
     
+    public DirectedMultigraph<String, String> getDual(){
+         DirectedMultigraph<String, String> dualGraph = new DirectedMultigraph<String, String>(String.class);
+         
+         for (String node:this.gpGraph.vertexSet()){
+             System.out.println(node);
+             String axn = "";
+             Set<String> addedAxns = new HashSet<String>();
+             if (!dualGraph.containsVertex(node)){
+                 dualGraph.addVertex(node);}
+             Set<AbstractState> possibleResults = new HashSet<AbstractState>();
+             for(String edge:this.gpGraph.outgoingEdgesOf(node)){
+                 System.out.println("___"+node);
+                 possibleResults.add(this.gpNodeMap.get(this.gpGraph.getEdgeTarget(edge)));
+             }
+             
+             Map<AbstractState, Map<String, Value>> diffLabels = Utils.getDiffLabels(possibleResults);
+             
+             for (String edge:this.gpGraph.outgoingEdgesOf(node)){
+                 String targetNode = this.gpGraph.getEdgeTarget(edge);
+                 dualGraph.addVertex(targetNode);
+                 String axnName = Utils.getAxnNameStrFromEdge(edge, this.GPDomain);
+                 String axnNodeName = axnName+node;
+                 if (!addedAxns.contains(axnName)){
+                     dualGraph.addVertex(axnNodeName);
+                     dualGraph.addEdge(node, axnNodeName, axnNodeName);
+                     addedAxns.add(axnName);
+                 }
+                 if (!dualGraph.containsVertex(targetNode)){
+                     dualGraph.addVertex(targetNode);}
+                String condition = "";
+                for (String var: diffLabels.get(this.gpNodeMap.get(targetNode)).keySet()){
+                    condition += " " + diffLabels.get(this.gpNodeMap.get(targetNode)).get(var).toIneqString(var);
+                }  
+                dualGraph.addEdge(axnNodeName, targetNode, 
+                                            axnNodeName+targetNode+": "+condition);             
+             }
+        }
+        return removeDummyStateNodes(dualGraph, this.gpGraph.vertexSet());
+        //return dualGraph;
+        
+    }
+    
+    public DirectedMultigraph<String, String> removeDummyStateNodes(DirectedMultigraph<String, String> graph, Set<String> nodes){
+        DirectedMultigraph<String, String> tempGraph = new DirectedMultigraph<String, String>(String.class);
+        for (String node: nodes){
+            for (String sourceEdge: graph.incomingEdgesOf(node)){
+                for (String targetEdge: graph.outgoingEdgesOf(node)){
+                    String label = sourceEdge;
+                    String sourceNode = graph.getEdgeSource(sourceEdge);
+                    String targetNode = graph.getEdgeTarget(targetEdge);
+                    tempGraph.addVertex(sourceNode);
+                    tempGraph.addVertex(targetNode);
+                    tempGraph.addEdge(sourceNode, targetNode, label);
+                }
+            }        
+        } 
+        return tempGraph;
+    }
     
 }
