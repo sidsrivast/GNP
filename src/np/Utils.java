@@ -4,14 +4,12 @@
  */
 package np;
 
+import org.jgrapht.graph.DirectedMultigraph;
+
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import org.jgrapht.graph.DirectedMultigraph;
-import org.jgrapht.Graphs;
+import java.util.*;
 /**
  * A set of miscellaneous i/o and graph methods.
  * 
@@ -59,12 +57,16 @@ public class Utils {
     }
    
     
+    public static String getAxnNameStrFromEdge(String e, Domain d){
+        return d.getAction(getAxnStrFromEdge(e)).getName();
+    }
+    
     /*
      * Rtturn the graph (from package jgrapht) in dot format. Can be plotted 
      * using graphviz.
      * 
      */
-    public static String graphToDotString(DirectedMultigraph<String, String> traceGraph, 
+    public static String GPToDotString(DirectedMultigraph<String, String> traceGraph, 
             Map<String, AbstractState> nodeMap, Domain d){
         String s = "digraph test {";
         
@@ -80,6 +82,25 @@ public class Utils {
     }
 
     
+    public static String graphToDotString(DirectedMultigraph<String, String> graph){
+       String s = "digraph test {";
+        
+        for(String v:graph.vertexSet()){
+          s+=v+" [label =\""+ v+ "\"]\n";
+        }
+        for(String e:graph.edgeSet()){
+            s+=graph.getEdgeSource(e)+"->"+graph.getEdgeTarget(e)+
+                    " [label=\""+ e +"\"];"+ "\n";
+        }
+        s+="}\n";
+        return s;
+    }
+    
+    public static void writeGraphToDotFile(DirectedMultigraph<String, String> graph, String path){
+        writeToFile(graphToDotString(graph), path);
+    }
+    
+    
     public static String getNonTerminalNode(DirectedMultigraph<String, String> g, List<String> nodes){
         for (String node:nodes){
             if (g.outDegreeOf(node)>0){
@@ -87,6 +108,48 @@ public class Utils {
             }
         }
         return null;
+    }
+    
+    
+        public static Set<String> getMatchingVars(Set<AbstractState> stateSet){
+        AbstractState prevState=null;
+        Set<String> matchingVars = new HashSet<String>();
+        for (AbstractState currentState : stateSet){
+            if (prevState == null){
+                prevState = currentState;
+                matchingVars.addAll(currentState.getVars());
+                matchingVars.addAll(currentState.getBoolVars());
+            }
+            Set<String> diffs = new HashSet<String>();
+            for (String var:matchingVars){
+                if (currentState.getVars().contains(var)){
+                    if (var.equals("clothesInBasket")){
+                        System.out.println();
+                    }
+                    if (!prevState.getInterval(var).equals(currentState.getInterval(var))){
+                        diffs.add(var);
+                    }
+                }else if (currentState.getBoolVars().contains(var)) {
+                    if (prevState.getBoolValue(var) != currentState.getBoolValue(var)){
+                        diffs.add(var);
+                    }
+                }
+            }
+            boolean removeAll = matchingVars.removeAll(diffs);
+            prevState = currentState;
+        }
+        return matchingVars;
+    }
+    
+    
+    public static Map<AbstractState,Map<String, Value>> getDiffLabels(Set<AbstractState> stateSet){
+        Set<String> vars = getMatchingVars(stateSet);
+        Map<AbstractState, Map<String, Value>> diffLabels = new HashMap<AbstractState, Map<String, Value>>();
+        
+        for (AbstractState s: stateSet){
+            diffLabels.put(s, s.getStrAllBut(vars));
+        }
+        return diffLabels;
     }
     
 }
