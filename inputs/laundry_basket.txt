@@ -7,6 +7,7 @@ clothesOnTable=5, gripperFree,  !holdingBasket, clothesInBasket=0, !inLaundryRoo
 [move_to_laundryroom] !inLaundryRoom:inLaundryRoom
 [place_basket_on_table2] holdingBasket, !gripperFree, inLaundryRoom: !holdingBasket, gripperFree, basketInLaundryRoom
 [pick_cloth_from_basket] basketInLaundryRoom, clothesInBasket>0, gripperFree, !clothInGripper : !gripperFree, clothesInBasket--, clothInGripper
+[pick_cloth_from_basket_c] !basketInLaundryRoom, !inLaundryRoom, clothesInBasket>0, gripperFree, !clothInGripper : !gripperFree, clothesInBasket--, clothInGripper
 [open_washer] inLaundryRoom, gripperFree, !washerOpen: washerOpen
 [place_cloth_in_washer] !gripperFree, clothInGripper,  inLaundryRoom, washerOpen: clothesInWasher++, gripperFree, !clothInGripper
 /*Goal*/
