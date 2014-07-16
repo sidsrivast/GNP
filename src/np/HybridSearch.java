@@ -78,6 +78,7 @@ public class HybridSearch {
             startTime = System.currentTimeMillis();
             
         }
+        System.out.println("\nWriting dual generalized plan in "+ outputPrefix + "_dual");
         Utils.writeGraphToDotFile(gp.getDual(), outputPrefix+"_dual");
     }
 
