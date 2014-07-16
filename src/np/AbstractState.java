@@ -235,7 +235,8 @@ public class AbstractState {
             }
            
             if (varUB-varLB >0){
-                CS.setValue(var, varLB + rvGenerator.nextInt(varUB-varLB));
+                //CS.setValue(var, varLB + rvGenerator.nextInt(varUB-varLB));
+                CS.setValue(var, varUB-1);
             } 
             else{
             CS.setValue(var, varLB);

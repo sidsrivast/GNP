@@ -45,7 +45,7 @@ public class HybridSearch {
         
         for(i=0;i<25;i++){
             System.out.format("Abstract State: \n %s\n ", gp.getNodeStruc(selectedNode).toStringShort());
-            c = gp.getNodeStruc(selectedNode).getInstance(0, 5);
+            c = gp.getNodeStruc(selectedNode).getInstance(0, 10);
             System.out.print("Instance:");
             System.out.print(c.toString());
             System.out.println("\n\n");
