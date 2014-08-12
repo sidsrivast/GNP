@@ -1,9 +1,11 @@
 /*Init*/
-clothesOnTable=5, gripperFree,  !holdingBasket, clothesInBasket=0, !inLaundryRoom, clothesInWasher=0, !clothInGripper, !washerOpen, !basketInLaundryRoom
+clothesOnTable=5, gripperFree,  !holdingBasket, clothesInBasket=0, !inLaundryRoom, clothesInWasher=0, !clothInGripper, !washerOpen, !basketInLaundryRoom, !turntdown, !toBasketSweep
 /*Actions*/
-[pick_cloth_from_table] !inLaundryRoom, gripperFree, clothesOnTable>0, !clothInGripper: !gripperFree, clothInGripper, clothesOnTable--
-[place_cloth_in_basket] !inLaundryRoom, clothInGripper, !gripperFree: clothesInBasket++, gripperFree, !clothInGripper
-[pick_basket_from_table] !inLaundryRoom,!holdingBasket, gripperFree: holdingBasket, !gripperFree
+[pick_cloth_from_table] !inLaundryRoom, gripperFree, clothesOnTable>0, !clothInGripper, !turntdown: !gripperFree, clothInGripper, clothesOnTable--
+[place_cloth_in_basket] !inLaundryRoom, clothInGripper, !gripperFree, !turntdown: clothesInBasket++, gripperFree, !clothInGripper, turntdown, toBasketSweep
+[turndown] turntdown: !turntdown
+[basket_sweep] !inLaundryRoom, clothesOnTable=0, gripperFree, !turntdown, toBasketSweep: !toBasketSweep
+[pick_basket_from_table] !inLaundryRoom,!holdingBasket, gripperFree, !turntdown, !toBasketSweep: holdingBasket, !gripperFree
 [move_to_laundryroom] !inLaundryRoom:inLaundryRoom
 [move_to_closet] inLaundryRoom:!inLaundryRoom
 [place_basket_on_table2] holdingBasket, !gripperFree, inLaundryRoom: !holdingBasket, gripperFree, basketInLaundryRoom
