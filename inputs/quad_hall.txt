@@ -1,0 +1,18 @@
+/*Init*/
+x=0, y=0, !visited_br, !visited_tr, !visited_tl, !visited_bl
+/*Actions*/
+[bottom_go_right1] x<1, y<1: x++
+[bottom_go_right2] x<10, y<1 : x++
+[bottom_go_left] x>0, y<1: x--
+[right_go_up] x>9, y<10: y++
+[right_go_down] x>9, y>0: y--
+[left_go_up] x<1, y<10: y++
+[left_go_down] x<1, y>0:y--
+[top_go_left] x>0, y>9: x--
+[top_go_right] x<10, y>9: x++
+[mark_visited_br] x>9, y<1: visited_br
+[mark_visited_tr] x>9, y>9: visited_tr
+[mark_visited_tl] x<1, y>9: visited_tl
+[mark_visited_bl] x<1, y<1: visited_bl
+/*Goal*/
+visited_br, visited_tr, visited_tl, x<1, y<1
