@@ -1,0 +1,6 @@
+/*Init*/
+x=1, y=1
+/*Actions*/
+[r] x<10, y<2 : x++
+/*Goal*/
+x>9
