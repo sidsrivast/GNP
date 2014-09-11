@@ -72,14 +72,14 @@ public class HybridSearch {
             if (selectedNode.equals("-1")){
                 System.out.format("No open nodes!\n");
                 System.out.format("Total time taken: %f\n", duration*1.0/1000);
+                System.out.println("\nWriting dual generalized plan in "+ outputPrefix + "_dual");
                 Utils.writeGraphToDotFile(gp.getDual(), outputPrefix+"_dual");
                 System.exit(0);
             }
             startTime = System.currentTimeMillis();
             
         }
-        System.out.println("\nWriting dual generalized plan in "+ outputPrefix + "_dual");
-        Utils.writeGraphToDotFile(gp.getDual(), outputPrefix+"_dual");
+        Utils.writeGraphToDotFile(gp.getDual(), outputPrefix+"_dual.dot");
     }
 
     
