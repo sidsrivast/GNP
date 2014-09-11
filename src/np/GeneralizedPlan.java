@@ -189,7 +189,8 @@ public class GeneralizedPlan {
     
     public String addIfSafe(String gpNode1, String axn, String gpNode2, 
             AbstractState struc){
-        System.out.println("Considering "+ gpNode1+" -> "+gpNode2);
+        System.out.println("Considering "+ gpNode1+": "+ getNodeStruc(gpNode1).toStringShort() + " -" + axn+ "-> "+gpNode2 +
+                ": " + getNodeStruc(gpNode2).toStringShort());
 
         String addedEdge = this.addEdgeToGraph(gpNode1, gpNode2, axn);
         
@@ -313,17 +314,17 @@ public class GeneralizedPlan {
         //compute incremented vars that are in the final interval
         String arbitNode;
         Iterator<String> sccNodeIterator = scc.vertexSet().iterator();
-        Set<String> terminalVars = new HashSet<String>();
+        Set<String> nonTerminalVars = new HashSet<String>();
         for(String var:varsIncremented){
             arbitNode = sccNodeIterator.next();
-            if (this.getNodeStruc(arbitNode).getInterval(var).getUB() != -1){
-                terminalVars.add(var);
+            if (this.getNodeStruc(arbitNode).getInterval(var).getUB() == -1){
+                nonTerminalVars.add(var);
             }
         }
-        if (!terminalVars.isEmpty()){
-            varsIncremented.removeAll(terminalVars);
+        if (!nonTerminalVars.isEmpty()){
+            varsIncremented.removeAll(nonTerminalVars);
         }
-        //Any edge with changing a progress var can only be executed finitely many times   
+        //Any edge changing a progress var can only be executed finitely many times
         Set<String> removed = new HashSet<String>();
         removed.addAll(removeEdgesAffectingVars(scc, decVars, varsDecremented));
         removed.addAll(removeEdgesAffectingVars(scc, incVars, varsIncremented));        
